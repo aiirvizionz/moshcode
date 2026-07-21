@@ -21,6 +21,7 @@ import { createPrd, listPrds, authoringPrompt } from "../src/prd.mjs";
 import { login, loginDevice, whoami, logout } from "../src/auth.mjs";
 import { tui } from "../src/tui.mjs";
 import { moshcodeVersion } from "../src/ui.mjs";
+import { parseRunMax } from "../src/run-options.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const EXAMPLE = path.join(HERE, "..", "examples", "alive.mosh");
@@ -43,12 +44,11 @@ function readScript(arg) {
 }
 
 function parseMax(value) {
-  if (value === undefined) throw new Error("moshcode run: --max requires a positive integer");
-  const max = Number(value);
-  if (!Number.isInteger(max) || max < 1) {
-    throw new Error(`moshcode run: --max must be a positive integer, got ${JSON.stringify(value)}`);
+  try {
+    return parseRunMax(value);
+  } catch (error) {
+    throw new Error(`moshcode run: ${error.message || error}`);
   }
-  return max;
 }
 
 // After a hand-off subcommand/engine session ends, capture its exit and drop

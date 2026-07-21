@@ -49,6 +49,13 @@ test("run accepts equals-form max option", async () => {
   assert.match(result.stdout, /1 loop\(s\)/);
 });
 
+test("run rejects non-decimal max option values", async () => {
+  const result = await run(["--max=1e2", "--dry-run"]);
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /--max must be a positive integer/);
+});
+
 test("run() includes another .mosh file, in order", async () => {
   const dir = mkdtempSync(join(tmpdir(), "moshcode-include-"));
   const child = join(dir, "child.mosh");

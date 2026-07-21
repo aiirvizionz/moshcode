@@ -17,6 +17,7 @@ import { runScript } from "./runtime.mjs";
 import { moshVocabulary } from "./commands.mjs";
 import { mcpCommand, skillCommand } from "./integrations.mjs";
 import { banner, hr, acid, ash, bone, dim, ok, err, info } from "./ui.mjs";
+import { parseRunMax } from "./run-options.mjs";
 
 const PROMPT = () => acid("mosh ") + dim("▸ ");
 
@@ -277,13 +278,11 @@ async function runFile(args) {
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
     if (a === "--max" || a === "-n") {
-      const v = Number(args[++i]);
-      if (!Number.isInteger(v) || v < 1) { console.log(err(`--max needs a positive integer`)); return; }
-      max = v;
+      try { max = parseRunMax(args[++i]); }
+      catch { console.log(err(`--max needs a positive integer`)); return; }
     } else if (a.startsWith("--max=")) {
-      const v = Number(a.slice("--max=".length));
-      if (!Number.isInteger(v) || v < 1) { console.log(err(`--max needs a positive integer`)); return; }
-      max = v;
+      try { max = parseRunMax(a.slice("--max=".length)); }
+      catch { console.log(err(`--max needs a positive integer`)); return; }
     } else if (a === "--dry-run") {
       dryRun = true;
     } else if (a.startsWith("-") && !file) {
